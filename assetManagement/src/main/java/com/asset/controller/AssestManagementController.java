@@ -1,5 +1,9 @@
 package com.asset.controller;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.sql.SQLException;
+
 import org.apache.commons.validator.GenericValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +23,8 @@ import com.asset.model.Location;
 import com.asset.model.Shop;
 import com.asset.service.AssestService;
 import com.asset.validation.AssestDataValidator;
+import com.google.gson.JsonIOException;
+import com.google.gson.JsonSyntaxException;
 
 @RestController
 public class AssestManagementController
@@ -30,7 +36,7 @@ public class AssestManagementController
 	private static Logger logger = LoggerFactory.getLogger(AssestManagementController.class);
 	
 	@RequestMapping(value="/shops", method = RequestMethod.POST)
-	public ResponseEntity saveShop(@RequestBody Shop shop)
+	public ResponseEntity saveShop(@RequestBody Shop shop) throws JsonSyntaxException, JsonIOException, ClassNotFoundException, MalformedURLException, SQLException, IOException
 	{
 		logger.info("Start executing saveShop Method");
 		

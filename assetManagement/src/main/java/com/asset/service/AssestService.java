@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.asset.model.Location;
 import com.asset.model.Shop;
@@ -36,14 +37,15 @@ public class AssestService
 	   static final String PASS = ""; 
 	   Gson gson = new Gson();
 	   
-	public Shop saveShop(Shop shop)
+	@Transactional(rollbackFor=Throwable.class)   
+	public Shop saveShop(Shop shop) throws SQLException, ClassNotFoundException, JsonSyntaxException, JsonIOException, MalformedURLException, IOException
 	{
 		Connection conn = null;
 		Statement stmt = null;
 		Shop tempShop = new Shop();
 		boolean duplicate = false;
-		try
-		{
+		/*try
+		{*/
 			Class.forName(JDBC_DRIVER);
 			conn = DriverManager.getConnection(DB_URL,USER,PASS);
 			stmt = conn.createStatement();
@@ -91,8 +93,10 @@ public class AssestService
 			rs.close();
 			stmt.close();
 			conn.close();
-		}catch(SQLException se)
+		//	throw new SQLException();
+		/*}catch(SQLException se)
 		{
+			System.out.println("Occured exception, data has been rolled back");
 			se.printStackTrace();
 		}catch(Exception ex)
 		{
@@ -108,7 +112,7 @@ public class AssestService
 	         } catch(SQLException se){ 
 	            se.printStackTrace(); 
 	         } //end finally
-		 } //end try 
+		 }*/ //end try 
 		if (duplicate)
 		{
 			shop = tempShop;
