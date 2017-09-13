@@ -13,21 +13,45 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.asset.entities.AddressEntity;
+import com.asset.entities.DepartmentEntity;
+import com.asset.entities.EmployeeEntity;
+import com.asset.entities.ShopEntity;
+import com.asset.model.Employee;
 import com.asset.model.Location;
 import com.asset.model.Shop;
 import com.asset.model.ShopAddress;
+import com.asset.repositories.DepartmentRepository;
+import com.asset.repositories.EmployeeRepository;
+import com.asset.repositories.ShopRepository;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 
-@Component
+@Service
 public class AssestService
 {
+		@Autowired
+	    private ShopRepository shopRepository;
+		
+		@Autowired
+		private EmployeeRepository empRepo;
+		
+		@Autowired
+		private DepartmentRepository deptRepo;
+		
+		
 	// JDBC driver name and database URL 
 	   static final String JDBC_DRIVER = "org.h2.Driver";   
 	   static final String DB_URL = "jdbc:h2:~/test";  
@@ -37,7 +61,44 @@ public class AssestService
 	   static final String PASS = ""; 
 	   Gson gson = new Gson();
 	   
-	@Transactional(rollbackFor=Throwable.class)   
+	  @Transactional(rollbackFor={Throwable.class})
+	  @CacheEvict(value="employees", key="#emp.name")
+	  public Employee saveEmployee(Employee emp) throws SQLException
+	  {
+		  /*DepartmentEntity deptEntity = new DepartmentEntity();
+		  deptEntity.setId(3);
+		  deptEntity.setName("QMG");
+		  
+		  deptRepo.save(deptEntity);*/
+		  
+		  
+		  EmployeeEntity entity = new EmployeeEntity(emp.getName(),emp.getDepartId());
+		  
+		  entity = empRepo.save(entity);
+		  
+		  if(null != entity.getId())
+		  {
+			  emp.setId(entity.getId());  
+		  }
+		  
+		 // throw new SQLException();
+		  return emp;
+	  }
+	  
+	  @Cacheable("employees")
+	  public List<String> getEmployee()
+	  {
+		  List<String> names = new ArrayList<>();
+		  List<EmployeeEntity> empEntities = (List<EmployeeEntity>) empRepo.findAll();
+		  for (EmployeeEntity employeeEntity : empEntities)
+		   {
+			 System.out.println("Names" + employeeEntity.getName());
+			 names.add(employeeEntity.getName());
+		   }
+		  return names;
+	  }
+	   
+	//@Transactional(rollbackFor=Throwable.class)   
 	public Shop saveShop(Shop shop) throws SQLException, ClassNotFoundException, JsonSyntaxException, JsonIOException, MalformedURLException, IOException
 	{
 		Connection conn = null;
@@ -45,17 +106,18 @@ public class AssestService
 		Shop tempShop = new Shop();
 		boolean duplicate = false;
 		/*try
-		{*/
+		{
+			
 			Class.forName(JDBC_DRIVER);
 			conn = DriverManager.getConnection(DB_URL,USER,PASS);
 			stmt = conn.createStatement();
-			
+			conn.setAutoCommit(false);
             String response = getLocation(shop.getAddress().getPostCode());
 			
 			String[] result = parseLocation(response);
 			
 			//Uncomment below code for first request and again comment, this for creating table.
-			/*String dropTable = "DROP TABLE SHOP";
+			String dropTable = "DROP TABLE SHOP";
 			
 			stmt.executeUpdate(dropTable);
 			
@@ -68,7 +130,9 @@ public class AssestService
 		            " longitude FLOAT, " +
 		            " PRIMARY KEY ( id ))";  
 			
-			stmt.executeUpdate(createSql);*/
+			stmt.executeUpdate(createSql);
+			
+			
 			String sql = "select name,number,postalCode from SHOP";
 			ResultSet rs = stmt.executeQuery(sql);
 			while(rs.next())
@@ -94,7 +158,7 @@ public class AssestService
 			stmt.close();
 			conn.close();
 		//	throw new SQLException();
-		/*}catch(SQLException se)
+		}catch(SQLException se)
 		{
 			System.out.println("Occured exception, data has been rolled back");
 			se.printStackTrace();
@@ -112,7 +176,23 @@ public class AssestService
 	         } catch(SQLException se){ 
 	            se.printStackTrace(); 
 	         } //end finally
-		 }*/ //end try 
+		 } *///end try 
+		
+		/*ShopEntity shopEntity = new ShopEntity();
+		shopEntity.setName(shop.getName());
+		
+		AddressEntity address = new AddressEntity();
+		address.setNumber(shop.getAddress().getNumber());
+		address.setPostCode(shop.getAddress().getPostCode());*/
+		//address.setShop(shopEntity);
+		
+		//shopEntity = shopRepository.save(shopEntity);
+		/*List<ShopEntity> shops = (List<ShopEntity>) shopRepository.findAll();
+		for (ShopEntity shopEntity2 : shops)
+		{
+			System.out.println(shopEntity2.getName());
+		}*/
+		
 		if (duplicate)
 		{
 			shop = tempShop;

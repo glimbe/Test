@@ -1,4 +1,4 @@
-package com.assest.Exception;
+package com.assest.exception;
 
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.Errors;

@@ -1,4 +1,15 @@
+server:
+ port: 10090
+ 
+eureka:
+  client:
+    serviceUrl:
+        defaultZone: http://localhost:9091/eureka
+  
+      
+---
 spring:
+  profiles: dev
   datasource:
     url: jdbc:mysql://127.0.0.1:3306/test
     username: root
@@ -7,5 +18,13 @@ spring:
     testOnBorrow: true
     validation-query: SELECT 1 
   jpa:
-    show-sql: true   
-    
+    show-sql: true
+  
+---
+
+#eureka:
+ #instance:
+  #hostname: localhost
+  #nonSecurePort: 9091
+  
+     
