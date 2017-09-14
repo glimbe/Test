@@ -20,7 +20,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 @EnableAutoConfiguration
 @ComponentScan("com.asset")
 @EnableCaching
-//@EnableDiscoveryClient
+@EnableDiscoveryClient
 public class Assets
 {
 
