@@ -1,0 +1,16 @@
+server:
+ port: 10099
+ 
+---
+spring:
+  profiles: dev
+  datasource:
+    url: jdbc:mysql://127.0.0.1:3306/test
+    username: root
+    password: Software25$
+    driverClassName: com.mysql.jdbc.Driver
+    testOnBorrow: true
+    validation-query: SELECT 1 
+  jpa:
+    show-sql: true
+---    
