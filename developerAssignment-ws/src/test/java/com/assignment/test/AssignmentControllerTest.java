@@ -60,13 +60,13 @@ public class AssignmentControllerTest
 		
 		Mockito.when(empRepo.findAll()).thenReturn(list);
 		
-		String result = mockMvc.perform(get("/assignment/employees/").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON)).andReturn().getResolvedException().getMessage();
+		ResultActions result = mockMvc.perform(get("/assignment/employees/").accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON));
 		
 		System.out.println("\n\n\n Response is "
-	            + result);
+	            + result.andReturn().getResponse().getStatus());
 	}
 	
-	@Test
+	//@Test
 	public void testUpdateEmployee() throws Exception
 	{
 		EmployeeEntity entity = new EmployeeEntity("Gokul", 1);

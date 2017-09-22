@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.assignment.entities.DepartmentEntity;
 import com.assignment.entities.EmployeeEntity;
@@ -33,6 +34,7 @@ public class AssignmentService
 	 * @param emp - Employee object with data.
 	 * @return Employee - updated object of employee.
 	 */
+	@Transactional(rollbackFor = Exception.class)
 	public Employee saveEmployee(Employee emp) 
 	{
 		logger.info("Start executing saveEmployee method");
@@ -83,6 +85,7 @@ public class AssignmentService
 	 * @param emp - Employee object with new data.
 	 * @return - updated entity.
 	 */
+	@Transactional(rollbackFor = Exception.class)
 	public Employee updateEmployee(Integer empId,Employee emp)
 	{
 		logger.info("Start executing updateEmployee method");
@@ -123,6 +126,7 @@ public class AssignmentService
 	 * @param department - data that needs to be saved.
 	 * @return - updated department.
 	 */
+	@Transactional(rollbackFor = Exception.class)
 	public Department saveDepartment(Department department)
 	{
 		logger.info("Start executing saveDepartment method");
